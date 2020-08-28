@@ -1,5 +1,27 @@
 # Local envrionment
 
+## result:
+* up:
+```
+# fxrc @ pop in ~/Learn/UdacityNanodegree/Udacity-Data-Engineering/Data-Modeling-with-Postgres/fxrc on git:master o [0:08:07] C:130
+$ docker-compose ps                 
+     Name                   Command               State                               Ports                             
+------------------------------------------------------------------------------------------------------------------------
+cassandra-seed   docker-entrypoint.sh cassa ...   Up      7000/tcp, 7001/tcp, 7199/tcp, 0.0.0.0:9042->9042/tcp, 9160/tcp
+pg-docker        docker-entrypoint.sh postg ...   Up      0.0.0.0:5430->5432/tcp
+```
+
+* down:
+```
+# fxrc @ pop in ~/Learn/UdacityNanodegree/Udacity-Data-Engineering/Data-Modeling-with-Postgres/fxrc on git:master x [0:08:59]
+$ docker-compose down
+Removing fxrc_postgresql_run_9582c07bfe55 ... done
+Removing pg-docker                        ... done
+Removing cassandra-seed                   ... done
+Removing network fxrc_default
+
+```
+
 ## PostgreSQL from docker-compose
 * ref: https://hashinteractive.com/blog/docker-compose-up-with-postgres-quick-tips/
 ```log
