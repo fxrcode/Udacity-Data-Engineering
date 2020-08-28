@@ -1,10 +1,15 @@
 version: '3'
 
 services:
-  cassandra:
-    image: 'cassandra'
+  cassandra-seed:
+    container_name: cassandra-seed
+    image: cassandra
     ports:
-      - '9040:9042'
+      - "9042:9042"   # Native protocol clients
+      # - "7199:7199"   # JMX
+      # - "9160:9160"   # Thrift clients
+    volumes:
+      - ./local_cassandra_data_seed:/var/lib/cassandra
 
   postgresql:
     image: postgres
@@ -16,7 +21,7 @@ services:
       - POSTGRES_PASSWORD=docker
     volumes:
       - ./postgres.conf:/etc/postgresql/postgresql.conf
-      - ./data:/var/lib/postgresql/data
+      - ./local_pg_data:/var/lib/postgresql/data
       - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
     command: postgres -c config_file=/etc/postgresql/postgresql.conf
     restart: always
