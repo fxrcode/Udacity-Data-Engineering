@@ -17,8 +17,8 @@ services:
     ports:
       - "5430:5432"
     environment:
-      - POSTGRES_USER=docker
-      - POSTGRES_PASSWORD=docker
+      - POSTGRES_USER=student # as in l1-demo-1-creating-a-table-with-postgres.ipynb
+      - POSTGRES_PASSWORD=student
     volumes:
       - ./postgres.conf:/etc/postgresql/postgresql.conf
       - ./local_pg_data:/var/lib/postgresql/data

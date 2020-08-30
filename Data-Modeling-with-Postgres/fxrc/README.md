@@ -1,5 +1,9 @@
 # Local envrionment
 
+## Install pkg
+* for Psycopg, simply do this after conda activate mypy3: `pip install psycopg2-binary`
+* also, in connection, remember to pass port 5430 since it's not default 5432!
+
 ## result:
 * up:
 ```
