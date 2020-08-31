@@ -64,13 +64,22 @@ CREATE TABLE udacity.music_library (
     AND read_repair_chance = 0.0
     AND speculative_retry = '99PERCENTILE';
 
-cqlsh:udacity> select * from udacity.music_library 
-           ... ;
+cqlsh:udacity> select * from udacity.music_library;
 
  year | artist_name | album_name
 ------+-------------+-------------
  1965 | The Beatles | Rubber Soul
  1970 | The Beatles |   Let it Be
+
+cqlsh:fxrcks> select * from songs where year=1980 and artist_name="The Beatles";
+SyntaxException: line 1:65 no viable alternative at input ';' (...where year=1980 and artist_name=["The Beatle]s";)
+
+cqlsh:fxrcks> select * from songs WHERE year=1965 AND artist_name='The Beatles';
+
+ year | artist_name | album_name         | single | song_title
+------+-------------+--------------------+--------+-------------
+ 1965 | The Beatles | Think For yourself |  False | Rubber Soul
+
 
 ```
 
