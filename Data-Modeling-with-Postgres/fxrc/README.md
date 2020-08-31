@@ -23,6 +23,22 @@ docker=# \l
            |        |          |            |            | docker=CTc/docker
  udacity   | docker | UTF8     | en_US.utf8 | en_US.utf8 | 
 (7 rows)
+
+```
+
+### Cassandra
+* because I don't have Cassadra in local, so I need to use cqlsh from container
+```
+$ docker exec -it cassandra-seed cqlsh
+Connected to Test Cluster at 127.0.0.1:9042.
+[cqlsh 5.0.1 | Cassandra 3.11.7 | CQL spec 3.4.4 | Native protocol v4]
+Use HELP for help.
+cqlsh> describe keyspace udacity
+
+CREATE KEYSPACE udacity WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'}  AND durable_writes = true;
+
+cqlsh> use udacity;
+
 cqlsh:udacity> describe keyspace udacity
 
 CREATE KEYSPACE udacity WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'}  AND durable_writes = true;
@@ -55,16 +71,6 @@ cqlsh:udacity> select * from udacity.music_library
 ------+-------------+-------------
  1965 | The Beatles | Rubber Soul
  1970 | The Beatles |   Let it Be
-
-```
-
-### Cassandra
-* because I don't have Cassadra in local, so I need to use cqlsh from container
-```
-$ docker exec -it cassandra-seed cqlsh
-Connected to Test Cluster at 127.0.0.1:9042.
-[cqlsh 5.0.1 | Cassandra 3.11.7 | CQL spec 3.4.4 | Native protocol v4]
-Use HELP for help.
 
 ```
 
