@@ -1,7 +1,15 @@
 # Data Modeling with Postgres
 
 ## Project Directions
-
+* do sql_queries.py and use test.ipynb to verify.
+* then call create_tables.py, and do etl.ipynb.
+* then reproduce what we did in etl.ipynb in etl.py.
+* There's only 1 unique songplays that has non-null songid & artistid.
+* found a bug in etl.[py/ipynb] , and reported in forum: https://knowledge.udacity.com/questions/48698
+```
+Because psycopg2 cur.execute() always return None! If a query was executed, the returned values can be retrieved using fetch*() methods.
+according to doc: https://www.psycopg.org/docs/cursor.html#cursor.execute.
+```
 
 ## Datasets
 * Log Dataset: ['artist', 'auth', 'firstName', 'gender', 'itemInSession', 'lastName',
