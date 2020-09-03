@@ -50,6 +50,8 @@
 
 ## Local environment setup
 * I use docker-compose to launch postgres, and cassandra.
+* `docker-compose up --force-recreate` to launch
+* `docker-compose down` to clean
 
 ## Datasets
 * due to jupyter lab's whatever limit, I can't download data folder from workspace.

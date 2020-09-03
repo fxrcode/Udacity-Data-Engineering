@@ -11,14 +11,15 @@ services:
     volumes:
       - ./local_cassandra_data_seed:/var/lib/cassandra
 
-  postgresql:
+  pg-postgresql:
     image: postgres
     container_name: pg-docker
     ports:
       - "5430:5432"
     environment:
-      - POSTGRES_USER=docker
-      - POSTGRES_PASSWORD=docker
+      - POSTGRES_USER=student
+      - POSTGRES_PASSWORD=student
+      - POSTGRES_DB=studentdb
     volumes:
       - ./postgres.conf:/etc/postgresql/postgresql.conf
       - ./local_pg_data:/var/lib/postgresql/data
