@@ -7,52 +7,62 @@ from sql_queries import *
 
 def process_song_file(cur, filepath):
     # open song file
-    df = 
+    df = pd.read_json(filepath, lines=True)
 
     # insert song record
-    song_data = 
+    song_data = df[['song_id', 'title', 'artist_id', 'year', 'duration']].values[0]
     cur.execute(song_table_insert, song_data)
-    
+
     # insert artist record
-    artist_data = 
+    artist_data = df[['artist_id', 'artist_name', 'artist_location', 'artist_latitude', 'artist_longitude']].values[0]
     cur.execute(artist_table_insert, artist_data)
 
 
 def process_log_file(cur, filepath):
     # open log file
-    df = 
+    df = pd.read_json(filepath, lines=True)
 
     # filter by NextSong action
-    df = 
+    # https://stackoverflow.com/questions/17071871/how-to-select-rows-from-a-dataframe-based-on-column-values
+    df = df.loc[df['page'] == 'NextSong']
 
     # convert timestamp column to datetime
-    t = 
-    
+    t = pd.to_datetime(df['ts'])
+
     # insert time data records
-    time_data = 
-    column_labels = 
-    time_df = 
+    # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.concat.html
+    # https://pandas.pydata.org/docs/user_guide/merging.html
+    time_data = pd.concat([t, t.dt.hour, t.dt.day, t.dt.week, t.dt.month, t.dt.year, t.dt.weekday], axis = 1).values
+    column_labels = ['start_time', 'hour', 'day', 'week', 'month', 'year', 'weekday']
+    time_df = pd.DataFrame(data=time_data, columns=column_labels)
 
     for i, row in time_df.iterrows():
         cur.execute(time_table_insert, list(row))
 
     # load user table
-    user_df = 
-
+    user_df = df[['userId', 'firstName', 'lastName', 'gender', 'level']]
     # insert user records
     for i, row in user_df.iterrows():
         cur.execute(user_table_insert, row)
 
     # insert songplay records
     for index, row in df.iterrows():
-        
+
         # get songid and artistid from song and artist tables
         results = cur.execute(song_select, (row.song, row.artist, row.length))
         songid, artistid = results if results else None, None
 
         # insert songplay record
-        songplay_data = 
-        cur.execute(songplay_table_insert, songplay_data)
+        songplay_data = (pd.to_datetime(row.ts), row.userId, row.level, songid, artistid, row.sessionId, row.location, row.userAgent)
+        try: 
+            cur.execute(songplay_table_insert, songplay_data)
+        except Exception as e: 
+            """
+            Error: Issue songplay_table_insert (1541191397796, 3, 'free', None, None, 112, 'Saginaw, MI', 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:31.0) Gecko/20100101 Firefox/31.0')
+not all arguments converted during string formatting
+            """
+            print("Error: Issue songplay_table_insert", songplay_data)
+            print (e)
 
 
 def process_data(cur, conn, filepath, func):
