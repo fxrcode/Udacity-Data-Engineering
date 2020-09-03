@@ -27,7 +27,7 @@ def process_log_file(cur, filepath):
     df = df.loc[df['page'] == 'NextSong']
 
     # convert timestamp column to datetime
-    t = pd.to_datetime(df['ts'])
+    t = pd.to_datetime(df['ts'], unit='ms')
 
     # insert time data records
     # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.concat.html
@@ -49,12 +49,22 @@ def process_log_file(cur, filepath):
     for index, row in df.iterrows():
 
         # get songid and artistid from song and artist tables
-        results = cur.execute(song_select, (row.song, row.artist, row.length))
+        # FIXME: https://knowledge.udacity.com/questions/48698
+        # results = cur.execute(song_select, (row.song, row.artist, row.length))
+        cur.execute(song_select, (row.song, row.artist, row.length))
+        results = cur.fetchone()
         songid, artistid = results if results else None, None
+        if results:
+            """
+            loop 30 files and only 1 songid, artistid is not null
+            28/30 files processed.
+            ('SOZCTXZ12AB0182364', 'AR5KOSW1187FB35FF4')
+            """
+            print(results)
 
         # insert songplay record
-        songplay_data = (pd.to_datetime(row.ts), row.userId, row.level, songid, artistid, row.sessionId, row.location, row.userAgent)
-        try: 
+        songplay_data = (pd.to_datetime(row.ts, unit='ms'), row.userId, row.level, songid, artistid, row.sessionId, row.location, row.userAgent)
+        try:
             cur.execute(songplay_table_insert, songplay_data)
         except Exception as e: 
             """
