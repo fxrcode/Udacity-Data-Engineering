@@ -1,11 +1,77 @@
 # Data Modeling with Postgres
 
+## Q&A
+### Discuss the purpose of this database in the context of the startup, Sparkify, and their analytical goals.
+* There're 5 tables created in Sparkifydb, relations retrieved from song.json and log.json
+* fact:
+    1. songplays - records in log data associated with song plays i.e. records with page NextSong
+        * attr: songplay_id, start_time, user_id, level, song_id, artist_id, session_id, location, user_agent
+* Dim:
+    1. users - users in the app
+        * attr: user_id, first_name, last_name, gender, level
+    2. songs - songs in music database
+        * attr: song_id, title, artist_id, year, duration
+    3. artists - artists in music database
+        * attr: artist_id, name, location, latitude, longitude
+    4. time - timestamps of records in songplays broken down into specific units
+        * attr:start_time, hour, day, week, month, year, weekday
+
+
+### State and justify your database schema design and ETL pipeline.
+* ER Diagram from DBeaver: ![er](fxrc/nano-3.er.png)
+* ETL pipeline: to retrieve proper data from song.json and log.json to insert into fact and dimension tables.
+* So that we can easily query songplays table, rather real timely join all 4 dimention tables. This improves query throughput and data integrity.
+### [Optional] Provide example queries and results for song play analysis.
+* find songplays with valid song/artistid: `select * from songplays where song_id is not null;`
+* find distinct users in songplays: `select distinct (user_id) from songplays`
+* count distinct users in songplays: `select count(distinct (user_id)) from songplays`
+* find active user stat, and top3: 49,80,97.
+    ```sql
+    SELECT user_id, COUNT(*) user_rank
+    FROM songplays GROUP BY user_id
+    ORDER BY user_rank DESC;
+    ```
+* most popular state with user actions, top 3: CA, MI, WI
+    ```sql
+    select subb.state, SUM(subb.user_action) as state_rank from
+    (SELECT user_id, right (s.location,2) as state, COUNT(*) user_action
+    FROM songplays s
+    GROUP BY user_id, s.location
+    ORDER BY user_action desc) as subb
+    group by subb.state
+    order by state_rank desc
+    ```
+
+---
+
 ## Project Directions
-* do sql_queries.py and use test.ipynb to verify.
-* then call create_tables.py, and do etl.ipynb.
-* then reproduce what we did in etl.ipynb in etl.py.
+### Create Tables
+* finish `sql_queries.py`, then call `create_tables.py`, and verify by `test.ipynb`.
+
+### Build ETL process
+* rerun `create_tables.py` to reset tables before notebooks.
+* easy and plain `etl.ipynb`, it only fetches one json, and it's quick verify meant. Then test with `test.ipynb`.
+
+### Build ETL pipeline
+* then reproduce what we did in `etl.ipynb` in `etl.py`.
+* always run `create_tables.py` before `etl.py`.
+* I can also use psql to debug, easier than in py. ![psql](fxrc/nano-3.1210.png)
+
+### Result:
 * There's only 1 unique songplays that has non-null songid & artistid.
-* found a bug in etl.[py/ipynb] , and reported in forum: https://knowledge.udacity.com/questions/48698
+```
+15/30 files processed.
+16/30 files processed.
+17/30 files processed.
+18/30 files processed.
+songid: SOZCTXZ12AB0182364, artistid: AR5KOSW1187FB35FF4
+19/30 files processed.
+20/30 files processed.
+21/30 files processed.
+22/30 files processed.
+
+```
+* found a **BUG** in `etl.[py/ipynb]` ,and reported in forum: https://knowledge.udacity.com/questions/48698
 ```
 Because psycopg2 cur.execute() always return None! If a query was executed, the returned values can be retrieved using fetch*() methods.
 according to doc: https://www.psycopg.org/docs/cursor.html#cursor.execute.

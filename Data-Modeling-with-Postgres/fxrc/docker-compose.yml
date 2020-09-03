@@ -15,7 +15,7 @@ services:
     image: postgres
     container_name: pg-docker
     ports:
-      - "5430:5432"
+      - "5432:5432"
     environment:
       - POSTGRES_USER=student
       - POSTGRES_PASSWORD=student

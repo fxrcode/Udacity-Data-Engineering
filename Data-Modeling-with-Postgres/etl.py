@@ -32,7 +32,7 @@ def process_log_file(cur, filepath):
     # insert time data records
     # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.concat.html
     # https://pandas.pydata.org/docs/user_guide/merging.html
-    time_data = pd.concat([t, t.dt.hour, t.dt.day, t.dt.week, t.dt.month, t.dt.year, t.dt.weekday], axis = 1).values
+    time_data = pd.concat([t, t.dt.hour, t.dt.day, t.dt.isocalendar().week, t.dt.month, t.dt.year, t.dt.weekday], axis = 1).values
     column_labels = ['start_time', 'hour', 'day', 'week', 'month', 'year', 'weekday']
     time_df = pd.DataFrame(data=time_data, columns=column_labels)
 
@@ -53,20 +53,25 @@ def process_log_file(cur, filepath):
         # results = cur.execute(song_select, (row.song, row.artist, row.length))
         cur.execute(song_select, (row.song, row.artist, row.length))
         results = cur.fetchone()
-        songid, artistid = results if results else None, None
+        
+        if results:
+            songid, artistid = results
+        else:
+            songid, artistid = None, None
+
         if results:
             """
             loop 30 files and only 1 songid, artistid is not null
             28/30 files processed.
             ('SOZCTXZ12AB0182364', 'AR5KOSW1187FB35FF4')
             """
-            print(results)
+            print(f"songid: {songid}, artistid: {artistid}")
 
         # insert songplay record
         songplay_data = (pd.to_datetime(row.ts, unit='ms'), row.userId, row.level, songid, artistid, row.sessionId, row.location, row.userAgent)
         try:
             cur.execute(songplay_table_insert, songplay_data)
-        except Exception as e: 
+        except Exception as e:
             """
             Error: Issue songplay_table_insert (1541191397796, 3, 'free', None, None, 112, 'Saginaw, MI', 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:31.0) Gecko/20100101 Firefox/31.0')
 not all arguments converted during string formatting
@@ -89,6 +94,7 @@ def process_data(cur, conn, filepath, func):
 
     # iterate over files and process
     for i, datafile in enumerate(all_files, 1):
+        # print(f"processing path: {datafile}")
         func(cur, datafile)
         conn.commit()
         print('{}/{} files processed.'.format(i, num_files))
