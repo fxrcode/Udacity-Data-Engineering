@@ -2,6 +2,14 @@
 
 ## Project Directions
 
+
+## Datasets
+* Log Dataset: ['artist', 'auth', 'firstName', 'gender', 'itemInSession', 'lastName',
+       'length', 'level', 'location', 'method', 'page', 'registration',
+       'sessionId', 'song', 'status', 'ts', 'userAgent', 'userId']
+* Song Dataset: ['artist_id', 'artist_latitude', 'artist_location', 'artist_longitude',
+       'artist_name', 'duration', 'num_songs', 'song_id', 'title', 'year']
+
 ## Local environment setup
 * I use docker-compose to launch postgres, and cassandra.
 
