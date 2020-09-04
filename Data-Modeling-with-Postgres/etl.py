@@ -123,13 +123,12 @@ not all arguments converted during string formatting
 def process_data(cur, conn, filepath, func):
     """meta function to prepare the right song and log json filepaths, and feed them to process_log_file, process_song_file for ETL process
 
-
     Args:
         cur (pyscopg2.cursor): Allows Python code to execute PostgreSQL command in a database session.
         conn (pyscopg2.connection): Handles the connection to a PostgreSQL database instance. It encapsulates a database session.
         filepath (string): directory path of song_data and log_data.
         func (function): accept process_[song/log]_file functions.
-    """    
+    """
     # get all files matching extension from directory
     all_files = []
     for root, dirs, files in os.walk(filepath):
