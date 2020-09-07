@@ -150,3 +150,44 @@ ON a.id = w.account_id
 GROUP BY a.id, a.name, w.channel
 ORDER BY use_of_channel DESC
 LIMIT 10;
+
+
+/*****
+    --- DATE
+******/
+
+-- Find the sales in terms of total dollars for all orders in each year, ordered from greatest to least. Do you notice any trends in the yearly sales totals?
+select DATE_TRUNC('year', o.occurred_at), SUM(total_amt_usd)
+from orders o
+group by 1
+order by 2 desc
+
+-- Which month did Parch & Posey have the greatest sales in terms of total dollars? Are all months evenly represented by the dataset?
+SELECT DATE_PART('month', occurred_at) ord_month, SUM(total_amt_usd) total_spent
+FROM orders
+WHERE occurred_at BETWEEN '2014-01-01' AND '2017-01-01'
+GROUP BY 1
+ORDER BY 2 DESC;
+
+-- Which year did Parch & Posey have the greatest sales in terms of total number of orders? Are all years evenly represented by the dataset?
+SELECT DATE_PART('year', occurred_at) ord_year,  COUNT(*) total_sales
+FROM orders
+GROUP BY 1
+ORDER BY 2 DESC;
+
+-- Which month did Parch & Posey have the greatest sales in terms of total number of orders? Are all months evenly represented by the dataset?
+select DATE_PART('month', o.occurred_at) as month, COUNT(*) as total_sales
+from orders o
+where DATE_PART('year', o.occurred_at) between '2014' and '2016'
+group by 1
+order by 2 desc
+
+-- In which month of which year did Walmart spend the most on gloss paper in terms of dollars?
+SELECT DATE_TRUNC('month', o.occurred_at) ord_date, SUM(o.gloss_amt_usd) tot_spent
+FROM orders o 
+JOIN accounts a
+ON a.id = o.account_id
+WHERE a.name = 'Walmart'
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 1;
