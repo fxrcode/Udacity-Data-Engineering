@@ -1,8 +1,8 @@
 # Udacity-Data-Engineering
 
 ## project 1: Data Modeling in SQL vs NoSQL
-[x] Data modeling with Postgres
-[] Data modeling with Cassandra
+- [x] Data modeling with Postgres
+* [ ] Data modeling with Cassandra
 
 ## Project 2 - Cloud Data Warehousing
 
