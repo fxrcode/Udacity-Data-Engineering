@@ -1,4 +1,6 @@
 # Readme
+## ERD
+![](ERD.png)
 
 ## import parch-and-posey.sql
 * simple and ease.
