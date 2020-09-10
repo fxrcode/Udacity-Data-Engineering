@@ -1,15 +1,15 @@
 version: '3'
 
 services:
-  cassandra-seed:
-    container_name: cassandra-seed
-    image: cassandra
-    ports:
-      - "9042:9042"   # Native protocol clients
-      # - "7199:7199"   # JMX
-      # - "9160:9160"   # Thrift clients
-    volumes:
-      - ./local_cassandra_data_seed:/var/lib/cassandra
+  # cassandra-seed:
+  #   container_name: cassandra-seed
+  #   image: cassandra
+  #   ports:
+  #     - "9042:9042"   # Native protocol clients
+  #     # - "7199:7199"   # JMX
+  #     # - "9160:9160"   # Thrift clients
+  #   volumes:
+  #     - ./local_cassandra_data_seed:/var/lib/cassandra
 
   pg-postgresql:
     image: postgres
