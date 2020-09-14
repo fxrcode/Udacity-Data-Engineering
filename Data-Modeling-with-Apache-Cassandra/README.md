@@ -33,3 +33,28 @@ Below are steps you can follow to complete each component of this project.
 1. Implement the logic in section Part I of the notebook template to iterate through each event file in event_data to process and create a new CSV file in Python
 2. Make necessary edits to Part II of the notebook template to include Apache Cassandra CREATE and INSERT statements to load processed records into relevant tables in your data model
 3. Test by running SELECT statements after running the queries on your database
+
+## Data modeling
+1. Give me the artist, song title and song's length in the music app history that was heard during  sessionId = 338, and itemInSession  = 4
+    * CREATE TABLE listen_history
+    ```
+    # partition key = session_id (for partition)
+    # clustering column = item_in_session (for alphabeta ordering)
+    # columns = session_id, item_in_session, artist, song, length
+    ```
+
+2. Give me only the following: name of artist, song (sorted by itemInSession) and user (first and last name) for userid = 10, sessionid = 182
+    * CREATE TABLE user_session
+    ```
+    # partition key = user_id & session_id (for partition)
+    # clustering columns = item_in_session (for alphabeta ordering)
+    # columns = user_id, session_id, item_in_session, artist, first_name, last_name
+    ```
+
+3. Give me every user name (first and last) in my music app history who listened to the song 'All Hands Against His Own'
+    * CREATE TABLE song_history
+    ```
+    # partition key = song (for partition)
+    # clustering columns = user_id (for alphabeta ordering)
+    # columns = song, user_id, first_name, last_name
+    ```
