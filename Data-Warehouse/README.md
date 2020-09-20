@@ -54,3 +54,8 @@ c. Document Process (in `README.md`)
 
 ## Note
 * The `SERIAL` command in Postgres is not supported in Redshift. The equivalent in redshift is `IDENTITY(0,1)`, which you can read more on in the Redshift Create Table Docs.
+
+## My Steps
+### Understand data
+* use IaC ipynb to check udacity-dend s3 for song, event json, then download via aws-cli in terminal: `aws s3 cp s3://udacity-dend/log_data/2018/11/2018-11-01-events.json .`.
+    * I had further copied 1 song data/Log data into samples folder.
