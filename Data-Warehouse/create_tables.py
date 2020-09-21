@@ -4,18 +4,35 @@ from sql_queries import create_table_queries, drop_table_queries
 
 
 def drop_tables(cur, conn):
+    """drop all STAR schema and staging tables, so it's clean.
+
+    Args:
+        cur (psycopg2.cursor): Allows Python code to execute PostgreSQL command in a database session.
+        conn (psycopg2.connection): Handles the connection to a PostgreSQL database instance. It encapsulates a database session.
+    """
     for query in drop_table_queries:
         cur.execute(query)
         conn.commit()
 
 
 def create_tables(cur, conn):
+    """create STAR schema and staging tables after cleanup.
+
+    Args:
+        cur (psycopg2.cursor): Allows Python code to execute PostgreSQL command in a database session.
+        conn (psycopg2.connection): Handles the connection to a PostgreSQL database instance. It encapsulates a database session.
+    """
     for query in create_table_queries:
         cur.execute(query)
         conn.commit()
 
 
 def main():
+    """configure and init redshift postgres DB connection with provided info from IaC ipynb to create redshift cluster.
+    2 phases schema buildup
+    * drop_tables: ensure we have clear database schemas in connected redshift database.
+    * create_tables: build schema for STAR schema and staging DB in sql_queries.py
+    """
     config = configparser.ConfigParser()
     config.read('dwh.cfg')
 

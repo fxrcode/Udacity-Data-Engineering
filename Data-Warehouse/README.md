@@ -25,6 +25,108 @@
 4. time - timestamps of records in songplays broken down into specific units
     * start_time, hour, day, week, month, year, weekday
 
+### SQL
+* ERD: ![](dwh.png)
+* sql:
+```sql
+CREATE TABLE IF NOT EXISTS staging_events
+(
+    artist          VARCHAR   NULL,
+    auth            VARCHAR   NULL,
+    first_name      VARCHAR   NULL,
+    gender          VARCHAR   NULL,
+    item_in_session INTEGER   NULL,
+    last_name       VARCHAR   NULL,
+    length          FLOAT     NULL,
+    level           VARCHAR   NULL,
+    location        VARCHAR   NULL,
+    method          VARCHAR   NULL,
+    page            VARCHAR   NULL,
+    registration    FLOAT     NULL,
+    session_id      INTEGER   NOT NULL,
+    song            VARCHAR   NULL,
+    status          INTEGER   NULL,
+    ts              TIMESTAMP NOT NULL,
+    user_agent      VARCHAR   NULL,
+    user_id         INTEGER   NULL
+);
+
+CREATE TABLE IF NOT EXISTS staging_songs
+(
+    artist_id        VARCHAR NOT NULL,
+    artist_latitude  FLOAT   NULL,
+    artist_longitude FLOAT   NULL,
+    artist_location  VARCHAR NULL,
+    artist_name      VARCHAR NULL,
+    duration         FLOAT   NULL,
+    num_songs        INTEGER NULL,
+    song_id          VARCHAR NOT NULL,
+    title            VARCHAR NULL,
+    year             INTEGER NULL
+);
+
+CREATE TABLE IF NOT EXISTS users
+(
+    user_id    INTEGER NOT NULL sortkey,
+    first_name VARCHAR NULL,
+    last_name  VARCHAR NULL,
+    gender     VARCHAR NULL,
+    level      VARCHAR NULL,
+    PRIMARY KEY (user_id)
+);
+
+CREATE TABLE IF NOT EXISTS songs
+(
+    song_id   VARCHAR NOT NULL sortkey,
+    title     VARCHAR NOT NULL,
+    artist_id VARCHAR NOT NULL,
+    year      INTEGER NOT NULL,
+    duration  FLOAT   NOT NULL,
+    PRIMARY KEY (song_id),
+    FOREIGN KEY (artist_id) REFERENCES artists (artist_id)
+);
+
+CREATE TABLE IF NOT EXISTS artists
+(
+    artist_id VARCHAR NOT NULL sortkey,
+    name      VARCHAR NULL,
+    location  VARCHAR NULL,
+    latitude  NUMERIC NULL,
+    longitude NUMERIC NULL,
+    PRIMARY KEY (artist_id)
+);
+
+CREATE TABLE IF NOT EXISTS time
+(
+    start_time TIMESTAMP NOT NULL sortkey distkey,
+    hour       SMALLINT  NULL,
+    day        SMALLINT  NULL,
+    week       SMALLINT  NULL,
+    month      SMALLINT  NULL,
+    year       SMALLINT  NULL,
+    weekday    SMALLINT  NULL,
+    PRIMARY KEY (start_time)
+);
+
+CREATE TABLE IF NOT EXISTS songplays
+(
+    songplay_id INTEGER IDENTITY (0,1) NOT NULL,
+    start_time  TIMESTAMP              NOT NULL sortkey distkey,
+    user_id     INTEGER                NOT NULL,
+    level       VARCHAR                NOT NULL,
+    song_id     VARCHAR                NOT NULL,
+    artist_id   VARCHAR                NOT NULL,
+    session_id  INTEGER                NOT NULL,
+    location    VARCHAR                NULL,
+    user_agent  VARCHAR                NULL,
+    PRIMARY KEY (songplay_id),
+    FOREIGN KEY (start_time) REFERENCES time (start_time),
+    FOREIGN KEY (user_id) REFERENCES users (user_id),
+    FOREIGN KEY (song_id) REFERENCES songs (song_id),
+    FOREIGN KEY (artist_id) REFERENCES artists (artist_id)
+);
+```
+
 ## The project template includes four files:
 1. `create_table.py` is where you'll create your fact and dimension tables for the star schema in Redshift.
 2. `etl.py` is where you'll load data from S3 into staging tables on Redshift and then process that data into your analytics tables on Redshift.
@@ -59,3 +161,58 @@ c. Document Process (in `README.md`)
 ### Understand data
 * use IaC ipynb to check udacity-dend s3 for song, event json, then download via aws-cli in terminal: `aws s3 cp s3://udacity-dend/log_data/2018/11/2018-11-01-events.json .`.
     * I had further copied 1 song data/Log data into samples folder.
+
+### setup-cluster notebook
+* mimic Exericse IaC to manage cluster, check data.
+* after cluster created, copy-paste endpoint and iam to `dwh.cfg`.
+
+### sql_queries.py
+* change in dwh.cfg
+    * use `song_data` rather `song-data`, same as `log_data`. Because these are subdirectories of bigger ones.
+* finish DROP, CREATE table in sql_queries, then run `python create_tables.py` in terminal (use launcher in Jupyter Lab).
+    * if got errors, goto Amazon Redshift -> 'Queries and loads(27)', to see errors and fix in sql_quries.py
+* Continue finish staging, insert queries.
+
+* run `python create_tables.py`
+* run `python etl.py`
+
+## Analysis
+* Check Redshift console for progress of create_tables or etl.
+* When it's done. (create_tables + etl takes about 8min)
+* Then we can do sql query on fact + dim tables
+
+### popular artist
+```sql
+%%sql
+select a.name, count(*)
+from artists a
+join songplays sp
+on a.artist_id = sp.artist_id
+group by 1
+order by 2 desc
+limit 3
+```
+**name**|**count**
+:-----:|:-----:
+Dwight Yoakam|37
+Kid Cudi / Kanye West / Common|10
+Kid Cudi|10
+
+### most popular song
+```sql
+%%sql
+select s.title, a.name, count(*)
+from songs s
+join songplays sp
+on s.song_id = sp.song_id
+join artists a
+on a.artist_id = sp.artist_id
+group by 1,2
+order by 3 desc
+limit 3
+```
+**title**|**name**|**count**
+:-----:|:-----:|:-----:
+You're The One|Dwight Yoakam|37
+Catch You Baby (Steve Pitron & Max Sanna Radio Edit)|Lonnie Gordon|9
+I CAN'T GET STARTED|Ron Carter|9
