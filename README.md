@@ -5,10 +5,10 @@
 - [x] Data modeling with Cassandra
 
 ## Project 2 - Cloud Data Warehousing
-- [ ] Data warehouse with AWS Redshift
+- [x] Data warehouse with AWS Redshift
 
 ## Project 3 - Data Lakes with Apache Spark
-
+- [ ] Data Lake with Spark
 
 ## Project 4 - Data Pipelines with Apache Airflow
 
