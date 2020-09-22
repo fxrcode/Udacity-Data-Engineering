@@ -32,3 +32,42 @@
 ### [Run etl.py](https://knowledge.udacity.com/questions/113108)
 * choose `EMR-6.0.0` for "spark-submit" to work properly with Python 3.
 * After EMR spinned, ssh to it, then do `spark-submit etl.py`.
+
+## Local Spark Development Environment
+- Download latest version (3.0.01 Sep 02,2020), package type (Pre-built for Apache Hadoop 3.2 and later), download spark: `spark-3.0.1-bin-hadoop3.2.tgz`
+- Then unzip in to `/opt`, set in `~/.zshrc` for `export SPARK_HOME="/opt/spark-3.0.1-bin-hadoop3.2"`
+
+```bash
+# fxrc @ pop in ~ [13:02:30] C:130
+$ sudo tar -xf ~/Downloads/spark-3.0.1-bin-hadoop3.2.tgz -C /opt/
+[sudo] password for fxrc:
+# fxrc @ pop in ~ [13:02:37]
+$ sudo chmod -R 755 /opt/spark-3.0.1-bin-hadoop3.2
+# fxrc @ pop in /opt [13:05:09]
+$ . ~/.zshrc
+# fxrc @ pop in /opt [13:05:15]
+$ echo ${SPARK_HOME}
+/opt/spark-3.0.1-bin-hadoop3.2
+```
+
+- Ready to launch Spark in standalone mode locally: `${SPARK_HOME}/sbin/start-all.sh`
+
+```bash
+# fxrc @ pop in ~/Learn/UdacityNanodegree/Udacity-Data-Engineering/Data-Lake-Spark on git:master x [13:23:45]
+$ ./run.sh
+starting org.apache.spark.deploy.master.Master, logging to /opt/spark-3.0.0-bin-hadoop3.2/logs/spark-fxrc-org.apache.spark.deploy.master.Master-1-pop.out
+localhost: starting org.apache.spark.deploy.worker.Worker, logging to /opt/spark-3.0.0-bin-hadoop3.2/logs/spark-fxrc-org.apache.spark.deploy.worker.Worker-1-pop.out
+```
+
+- Verify it's good, according to: https://jimolonely.github.io/2019/09/15/spark/008-spark-standalone-conf-run/
+    - or goto Spark UI: http://localhost:8080/
+    - or use `jps` in terminal to check java process.
+
+    ```bash
+    # fxrc @ pop in ~/Learn/UdacityNanodegree/Udacity-Data-Engineering/Data-Lake-Spark on git:master x [13:24:29]
+    $ jps
+    800335 Jps
+    7349
+    798740 Worker
+    798469 Master
+    ```
