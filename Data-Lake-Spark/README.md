@@ -25,6 +25,10 @@
 
 * Exactly, you are using Spark locally. And of course, you need to create an S3 bucket on you AWS account to hold the output.
 
-### [EMR cluster, notebook](https://knowledge.udacity.com/questions/307548)
+### [EMR cluster](https://knowledge.udacity.com/questions/307548)
 * You are supposed to develop your code using local data in the workspace, then upload it onto the EMR master after you create the cluster on AWS.
 * Once your code works on the local dir data with a single Spark local node, you can add your AWS credentials and change the input/output path to S3 (you need to create an S3 bucket for outputs), then run your code on AWS EMR.
+
+### [Run etl.py](https://knowledge.udacity.com/questions/113108)
+* choose `EMR-6.0.0` for "spark-submit" to work properly with Python 3.
+* After EMR spinned, ssh to it, then do `spark-submit etl.py`.
