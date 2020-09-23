@@ -15,6 +15,7 @@ os.environ['AWS_SECRET_ACCESS_KEY'] = config.get('AWS', 'AWS_SECRET_ACCESS_KEY')
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s  [%(name)s] %(message)s')
 LOG = logging.getLogger('datalake_etl')
 
+
 def create_spark_session():
     spark = SparkSession \
         .builder \
@@ -23,24 +24,39 @@ def create_spark_session():
     return spark
 
 
-# def process_song_data(spark, input_data, output_data):
-#     # get filepath to song data file
-#     song_data = 
+def process_song_data(spark, input_data, output_data):
+    """[summary]
 
-#     # read song data file
-#     df = 
+    Args:
+        spark (SparkSession): The entry point to programming Spark with the Dataset and DataFrame API.
+        input_data (string): input data root path (local test) or S3 bucket (udacity)
+        output_data ([type]): output data root path (local test) or S3 bucket (my own)
+    """
+    # get filepath to song data file
+    song_data = f"{input_data}song_data/*/*/*/*.json"
+    LOG.info(f"Here you go, song_data: {song_data}")
 
-#     # extract columns to create songs table
-#     songs_table =
-    
-#     # write songs table to parquet files partitioned by year and artist
-#     songs_table
+    # read song data file
+    df = spark.read.json(song_data)
 
-#     # extract columns to create artists table
-#     artists_table = 
-    
-#     # write artists table to parquet files
-#     artists_table
+    ## quick inspect
+    df.printSchema()
+    df.count()
+
+    ## Creates or replaces a local temporary view with this DataFrame, so as to use pyspark.sql
+    df.createOrReplaceTempView("song_view")
+
+    # extract columns to create songs table
+    songs_table = spark.sql(song_table_query)
+
+    # write songs table to parquet files partitioned by year and artist
+    songs_table.write.partitionBy("year", "artist_id").parquet(path=output_data+'song_table', mode="overwrite")
+
+    # extract columns to create artists table
+    artists_table =
+
+    # write artists table to parquet files
+    artists_table
 
 
 # def process_log_data(spark, input_data, output_data):
@@ -48,36 +64,36 @@ def create_spark_session():
 #     log_data =
 
 #     # read log data file
-#     df = 
-    
+#     df =
+
 #     # filter by actions for song plays
-#     df = 
+#     df =
 
 #     # extract columns for users table
-#     artists_table = 
-    
+#     artists_table =
+
 #     # write users table to parquet files
 #     artists_table
 
 #     # create timestamp column from original timestamp column
 #     get_timestamp = udf()
-#     df = 
-    
+#     df =
+
 #     # create datetime column from original timestamp column
 #     get_datetime = udf()
-#     df = 
-    
+#     df =
+
 #     # extract columns to create time table
-#     time_table = 
-    
+#     time_table =
+
 #     # write time table to parquet files partitioned by year and month
 #     time_table
 
 #     # read in song data to use for songplays table
-#     song_df = 
+#     song_df =
 
-#     # extract columns from joined song and log datasets to create songplays table 
-#     songplays_table = 
+#     # extract columns from joined song and log datasets to create songplays table
+#     songplays_table =
 
 #     # write songplays table to parquet files partitioned by year and month
 #     songplays_table
@@ -85,11 +101,14 @@ def create_spark_session():
 
 def main():
     spark = create_spark_session()
-    print(f"Spark launched:\n {spark} \n")
-    input_data = "s3a://udacity-dend/"
-    output_data = ""
-    
-    # process_song_data(spark, input_data, output_data)
+    LOG.info(f"Spark launched:\n {spark} \n")
+    # input_data = "s3a://udacity-dend/"
+    # output_data = ""
+    CWD = os.getcwd()
+    input_data = f"{CWD}/data/"
+    output_data = f"{CWD}/output_data/"
+
+    process_song_data(spark, input_data, output_data)
 #     process_log_data(spark, input_data, output_data)
 
 
