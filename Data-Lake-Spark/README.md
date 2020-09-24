@@ -10,6 +10,62 @@
 * In this project, you'll apply what you've learned on Spark and data lakes to build an ETL pipeline for a data lake hosted on S3. To complete the project, you will need to load data from S3, process the data into analytics tables using Spark, and load them back into S3. You'll deploy this Spark process on a cluster using AWS.
 
 ## My track
+* First setup local Spark environment
+* Do interactive way in jupyter lab, with local data.
+* Transalate into `etl.py`.
+* Launch Spot EMR by click-and-fill (must add hadoop, Spark in application selecction. Otherwise, no `s3-dist-cp` to mapReduce copy output from HDFS->S3)
+  * too a while to get EMR in good shape:
+    1. add `SSH` -> `My IP` to inbound rule of master security group.
+    2. ssh to master node
+    3. ssh to master node with `-ND 8157` for on-cluster service UI (hdfs, spark)
+    4. create notebook to connect to this cluster
+    5. submit job in SSH session: `spark-submit etl.py`
+* In notebook, I can do simple business analytics as in Data Warehouse project.
+* In 10-13min, the job is done, in my local machine, do `$ aws emr add-steps --cluster-id j-10HIAFUGF1OZG --steps file://./step.json`, check the Step status. It's completed in 1min.
+* Here's tail log of Spark job:
+```
+20/09/24 05:00:26 INFO TaskSetManager: Finished task 465.0 in stage 48.0 (TID 43535) in 425 ms on ip-172-31-0-204.us-west-2.compute.internal (executor 1) (463/466)
+20/09/24 05:00:27 INFO TaskSetManager: Finished task 462.0 in stage 48.0 (TID 43532) in 907 ms on ip-172-31-14-77.us-west-2.compute.internal (executor 2) (464/466)
+20/09/24 05:00:27 INFO TaskSetManager: Finished task 461.0 in stage 48.0 (TID 43531) in 1350 ms on ip-172-31-14-77.us-west-2.compute.internal (executor 2) (465/466)
+20/09/24 05:00:27 INFO TaskSetManager: Finished task 464.0 in stage 48.0 (TID 43534) in 1033 ms on ip-172-31-0-204.us-west-2.compute.internal (executor 1) (466/466)
+20/09/24 05:00:27 INFO YarnScheduler: Removed TaskSet 48.0, whose tasks have all completed, from pool 
+20/09/24 05:00:27 INFO DAGScheduler: ResultStage 48 (parquet at NativeMethodAccessorImpl.java:0) finished in 46.283 s
+20/09/24 05:00:27 INFO DAGScheduler: Job 37 finished: parquet at NativeMethodAccessorImpl.java:0, took 46.295063 s
+20/09/24 05:00:27 INFO FileFormatWriter: Write Job 4be76e5c-ef94-460e-a8a1-f6a0d848d605 committed.
+20/09/24 05:00:27 INFO FileFormatWriter: Finished processing stats for write job 4be76e5c-ef94-460e-a8a1-f6a0d848d605.
+2020-09-24 05:00:27,776 INFO  [etl] Finished process_log_data in 0:03:09.543922
+2020-09-24 05:00:27,776 INFO  [etl] Total process took 0:12:22.554508
+20/09/24 05:00:27 INFO SparkContext: Invoking stop() from shutdown hook
+20/09/24 05:00:27 INFO SparkUI: Stopped Spark web UI at http://ip-172-31-13-69.us-west-2.compute.internal:4040
+20/09/24 05:00:27 INFO YarnClientSchedulerBackend: Interrupting monitor thread
+20/09/24 05:00:27 INFO YarnClientSchedulerBackend: Shutting down all executors
+20/09/24 05:00:27 INFO YarnSchedulerBackend$YarnDriverEndpoint: Asking each executor to shut down
+20/09/24 05:00:27 INFO SchedulerExtensionServices: Stopping SchedulerExtensionServices
+(serviceOption=None,
+ services=List(),
+ started=false)
+20/09/24 05:00:27 INFO YarnClientSchedulerBackend: Stopped
+20/09/24 05:00:27 INFO MapOutputTrackerMasterEndpoint: MapOutputTrackerMasterEndpoint stopped!
+20/09/24 05:00:27 INFO MemoryStore: MemoryStore cleared
+20/09/24 05:00:27 INFO BlockManager: BlockManager stopped
+20/09/24 05:00:27 INFO BlockManagerMaster: BlockManagerMaster stopped
+20/09/24 05:00:27 INFO OutputCommitCoordinator$OutputCommitCoordinatorEndpoint: OutputCommitCoordinator stopped!
+20/09/24 05:00:27 INFO SparkContext: Successfully stopped SparkContext
+20/09/24 05:00:27 INFO ShutdownHookManager: Shutdown hook called
+20/09/24 05:00:27 INFO ShutdownHookManager: Deleting directory /mnt/tmp/spark-80b4f635-dfe2-4c88-8abc-3313b71eb24e/pyspark-976c0531-a514-493f-864e-5b6d4fcc84e9
+20/09/24 05:00:27 INFO ShutdownHookManager: Deleting directory /mnt/tmp/spark-80b4f635-dfe2-4c88-8abc-3313b71eb24e
+20/09/24 05:00:27 INFO ShutdownHookManager: Deleting directory /mnt/tmp/spark-5508d52d-2e56-49c5-87e1-b5b302ac73bb
+[hadoop@ip-172-31-13-69 ~]$ 
+[hadoop@ip-172-31-13-69 ~]$ 
+[hadoop@ip-172-31-13-69 ~]$ 
+[hadoop@ip-172-31-13-69 ~]$ exit
+logout
+Connection to ec2-54-203-147-200.us-west-2.compute.amazonaws.com closed.
+
+```
+
+
+## Hints
 ### Develop flow
 * AWS S3 will be the data source and destination. You will read the songs and events files from AWS S3, process them into 5 tables and write the tables data back in parquet format to AWS S3 while satisfying the following requirements
     - Separate directory for each table

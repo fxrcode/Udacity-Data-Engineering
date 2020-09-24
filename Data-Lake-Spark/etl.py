@@ -4,7 +4,8 @@ import os
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import udf, col
 from pyspark.sql.functions import year, month, dayofmonth, hour, weekofyear, date_format
-from pyspark.sql.types import StructType as R, StructField as Fld, DoubleType as Dbl, StringType as Str, IntegerType as Int, DateType as Date
+from pyspark.sql.types import StructType as R, StructField as Fld, DoubleType as Dbl, StringType as Str, \
+    IntegerType as Int, DateType as Date
 import logging
 
 config = configparser.ConfigParser()
@@ -59,7 +60,7 @@ FROM song_view
     songs_table.show(5)
 
     # write songs table to parquet files partitioned by year and artist
-    songs_table.write.partitionBy("year", "artist_id").parquet(path=output_data+'song_table', mode="overwrite")
+    songs_table.write.partitionBy("year", "artist_id").parquet(path=output_data + 'songs.parquet', mode="overwrite")
 
     ## createTempView everytime before spark.sql, because the df might have been modified with new columns
     df_s.createOrReplaceTempView("song_view")
@@ -77,13 +78,13 @@ FROM song_view
     artists_table.show(5)
 
     # write artists table to parquet files
-    artists_table.write.parquet(output_data+'artists.parquest', mode="overwrite")
+    artists_table.write.parquet(output_data + 'artists.parquest', mode="overwrite")
 
 
 def process_log_data(spark, input_data, output_data):
     # get filepath to log data file
-    # log_data = f"{input_data}log_data/*/*/*.json"
-    log_data = f"{input_data}log_data/*.json"
+    log_data = f"{input_data}log_data/*/*/*.json"
+    # log_data = f"{input_data}log_data/*.json"
     LOG.info(f"Here you go, log_data: {log_data}")
 
     # read log data file
@@ -108,14 +109,14 @@ def process_log_data(spark, input_data, output_data):
     users_table.show(5)
 
     # write users table to parquet files
-    users_table.write.parquet(output_data+"users.parquet", mode = "overwrite")
+    users_table.write.parquet(output_data + "users.parquet", mode="overwrite")
 
     # create timestamp column from original timestamp column
-    get_timestamp = udf(lambda x:  datetime.fromtimestamp(x/1000).strftime('%Y-%m-%d %H:%M:%S'))
+    get_timestamp = udf(lambda x: datetime.fromtimestamp(x / 1000).strftime('%Y-%m-%d %H:%M:%S'))
     df_l = df_l.withColumn("timestamp", get_timestamp(df_l.ts))
 
     # create datetime column from original timestamp column
-    get_datetime = udf(lambda x: datetime.fromtimestamp(x/1000).strftime('%Y-%m-%d'))
+    get_datetime = udf(lambda x: datetime.fromtimestamp(x / 1000).strftime('%Y-%m-%d'))
     df_l = df_l.withColumn("datetime", get_datetime(df_l.ts))
 
     ## quick inspect
@@ -140,7 +141,7 @@ def process_log_data(spark, input_data, output_data):
     time_table.show(5)
 
     # write time table to parquet files partitioned by year and month
-    time_table.write.partitionBy("year", "month").parquet(output_data+"time.parquet", mode = "overwrite")
+    time_table.write.partitionBy("year", "month").parquet(output_data + "time.parquet", mode="overwrite")
 
     # read in song data to use for songplays table
     song_data = f"{input_data}song_data/*/*/*/*.json"
@@ -178,17 +179,17 @@ def process_log_data(spark, input_data, output_data):
     songplays_table.show(5)
 
     # write songplays table to parquet files partitioned by year and month
-    songplays_table.write.partitionBy("year", "month").parquet(output_data+"songplays.parquet", mode = "overwrite")
+    songplays_table.write.partitionBy("year", "month").parquet(output_data + "songplays.parquet", mode="overwrite")
 
 
 def main():
     spark = create_spark_session()
     LOG.info(f"Spark launched:\n {spark} \n")
-    # input_data = "s3a://udacity-dend/"
-    # output_data = ""
-    CWD = os.getcwd()
-    input_data = f"{CWD}/data/"
-    output_data = f"{CWD}/output_data/"
+    input_data = "s3a://udacity-dend/"
+    output_data = "hdfs:///user/sparkify-data/"
+    # CWD = os.getcwd()
+    # input_data = f"{CWD}/data/"
+    # output_data = f"{CWD}/output_data/"
 
     t_song_data = datetime.now()
     process_song_data(spark, input_data, output_data)
