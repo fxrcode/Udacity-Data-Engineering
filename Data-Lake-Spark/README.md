@@ -71,6 +71,7 @@ Connection to ec2-54-203-147-200.us-west-2.compute.amazonaws.com closed.
 * etl-nb.ipynb: the 1st step notebook to interactively develop etl.py in local and EMR
 * etl.py: translate etl-nb.ipynb to python file so as to spark-submit.
 * step.json: s3-ds-cp HDFS -> S3.
+* S3: `fxrcode-dataeng-datalakes-sept23/output`
 
 ## Hints
 ### Develop flow
