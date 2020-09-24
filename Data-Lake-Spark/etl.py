@@ -18,6 +18,11 @@ LOG = logging.getLogger('etl')
 
 
 def create_spark_session():
+    """get or create SparkSession
+
+    Returns:
+        [SparkSession]: The entry point to programming Spark with the Dataset and DataFrame API.
+    """
     spark = SparkSession \
         .builder \
         .config("spark.jars.packages", "org.apache.hadoop:hadoop-aws:2.7.0") \
@@ -26,7 +31,8 @@ def create_spark_session():
 
 
 def process_song_data(spark, input_data, output_data):
-    """extract song and artists table from song_data directly from s3. song_data folder is similar to Data Warehouse staging_song.
+    """extract songs and artists table from song_data directly from s3. song_data folder is similar to Data Warehouse staging_song.
+    partition and persist songs & artists table into parquet in HDFS
 
     Args:
         spark (SparkSession): The entry point to programming Spark with the Dataset and DataFrame API.
@@ -49,12 +55,13 @@ def process_song_data(spark, input_data, output_data):
 
     # extract columns to create songs table
     songs_table = spark.sql("""
-SELECT DISTINCT song_id,
-                title,
-                artist_id,
-                year,
-                duration
-FROM song_view
+    SELECT
+        DISTINCT song_id,
+        title,
+        artist_id,
+        year,
+        duration
+    FROM song_view
     """)
     songs_table.printSchema()
     songs_table.show(5)
@@ -67,13 +74,14 @@ FROM song_view
 
     # extract columns to create artists table
     artists_table = spark.sql("""
-SELECT DISTINCT artist_id, 
-                artist_name,
-                artist_location, 
-                artist_latitude,
-                artist_longitude
-FROM song_view
-""")
+    SELECT
+        DISTINCT artist_id,
+        artist_name,
+        artist_location,
+        artist_latitude,
+        artist_longitude
+    FROM song_view
+    """)
     artists_table.printSchema()
     artists_table.show(5)
 
@@ -82,6 +90,15 @@ FROM song_view
 
 
 def process_log_data(spark, input_data, output_data):
+    """extract users, time table from log_data directly from s3. log_data folder is similar to Data Warehouse staging_events.
+    then join logs, songs, and time to build fact table: songplays. And save all tables in HDFS after partitioned.
+
+    Args:
+        spark (SparkSession): The entry point to programming Spark with the Dataset and DataFrame API.
+        input_data (string): input data root path (local test) or S3 bucket (udacity)
+        output_data ([type]): output data root path (local test) or S3 bucket (my own)
+    """
+
     # get filepath to log data file
     log_data = f"{input_data}log_data/*/*/*.json"
     # log_data = f"{input_data}log_data/*.json"
@@ -98,11 +115,12 @@ def process_log_data(spark, input_data, output_data):
 
     # extract columns for users table
     users_table = spark.sql("""
-    SELECT DISTINCT userId as user_id,
-                    firstName as first_name,
-                    lastName as last_name,
-                    gender,
-                    level
+    SELECT
+        DISTINCT userId as user_id,
+        firstName as first_name,
+        lastName as last_name,
+        gender,
+        level
     FROM log_view
     """)
     users_table.printSchema()
@@ -128,13 +146,14 @@ def process_log_data(spark, input_data, output_data):
 
     # extract columns to create time table
     time_table = spark.sql("""
-    SELECT  DISTINCT timestamp AS start_time,
-                        hour(timestamp) AS hour,
-                        day(timestamp)  AS day,
-                        weekofyear(timestamp) AS week,
-                        month(timestamp) AS month,
-                        year(timestamp) AS year,
-                        dayofweek(timestamp) AS weekday
+    SELECT
+        DISTINCT timestamp AS start_time,
+        hour(timestamp) AS hour,
+        day(timestamp)  AS day,
+        weekofyear(timestamp) AS week,
+        month(timestamp) AS month,
+        year(timestamp) AS year,
+        dayofweek(timestamp) AS weekday
     FROM log_view
     """)
     time_table.printSchema()
