@@ -3,6 +3,11 @@ from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
 
 class DataQualityOperator(BaseOperator):
+    """Custome operator to check data quality, to see if any table in the list is empty!
+
+    Args:
+        BaseOperator (BaseOperator): Abstract base class for all operators.
+    """
 
     ui_color = '#89DA59'
 
@@ -17,6 +22,15 @@ class DataQualityOperator(BaseOperator):
         self.tables = tables
 
     def execute(self, context):
+        """used postgres hook to run count on table, to check if table is empty or size = 0
+
+        Args:
+            context (context): Context is the same dictionary used as when rendering jinja templates.
+
+        Raises:
+            ValueError: raise if no records
+            ValueError: raise if contains 0 row
+        """
         self.log.info('DataQualityOperator start')
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
         for table in self.tables:

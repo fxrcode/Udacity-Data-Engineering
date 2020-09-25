@@ -3,6 +3,11 @@ from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
 
 class LoadDimensionOperator(BaseOperator):
+    """Custom operator to load dim tables from staging tables.
+
+    Args:
+        BaseOperator (BaseOperator): Abstract base class for all operators.
+    """
 
     ui_color = '#80BD9E'
     insert_sql ='''
@@ -25,6 +30,11 @@ class LoadDimensionOperator(BaseOperator):
         self.append_only = append_only
 
     def execute(self, context):
+        """override execute to do trunct-insert parttern on table
+
+        Args:
+            context (context): Context is the same dictionary used as when rendering jinja templates.
+        """
         self.log.info('LoadDimensionOperator start')
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
         if not self.append_only:

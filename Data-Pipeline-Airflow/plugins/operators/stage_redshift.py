@@ -6,6 +6,14 @@ from airflow.utils.decorators import apply_defaults
 import datetime
 
 class StageToRedshiftOperator(BaseOperator):
+    """Custome operator to load json files from S3 -> Redshift.
+    Also containing a templated field that allows it to load
+    timestamped files from S3 based on the execution time and run backfills.
+
+    Args:
+        BaseOperator (BaseOperator): Abstract base class for all operators.
+    """
+
     ui_color = '#358140'
     template_fields = ("s3_key",)
     csv_copy_sql = """
@@ -51,6 +59,11 @@ class StageToRedshiftOperator(BaseOperator):
         self.backfill = backfill
 
     def execute(self, context):
+        """use different sql to load csv vs json from S3 -> redshift
+
+        Args:
+            context (context): Context is the same dictionary used as when rendering jinja templates.
+        """
         self.log.info('StageToRedshiftOperator not implemented yet')
         aws_hook = AwsHook(self.aws_credentials_id)
         credentials = aws_hook.get_credentials()
