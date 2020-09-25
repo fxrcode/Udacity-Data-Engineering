@@ -19,11 +19,12 @@ default_args = {
     'email_on_retry': False,
 }
 
-dag = DAG('etl_dag',
+dag = DAG('etl_dag_1',
           default_args=default_args,
           description='Load and transform data in Redshift with Airflow',
           schedule_interval='@hourly',
-          catchup=False
+          catchup=False,
+          max_active_runs=1,
         )
 
 start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
@@ -52,32 +53,54 @@ stage_songs_to_redshift = StageToRedshiftOperator(
 
 load_songplays_table = LoadFactOperator(
     task_id='Load_songplays_fact_table',
-    dag=dag
+    dag=dag,
+    redshift_conn_id="redshift",
+    table="songplays",
+    sql_query=SqlQueries.songplay_table_insert,
+    append_only=False
 )
 
 load_user_dimension_table = LoadDimensionOperator(
     task_id='Load_user_dim_table',
-    dag=dag
+    dag=dag,
+    redshift_conn_id="redshift",
+    table="users",
+    sql_query=SqlQueries.user_table_insert,
+    append_only=False
 )
 
 load_song_dimension_table = LoadDimensionOperator(
     task_id='Load_song_dim_table',
-    dag=dag
+    dag=dag,
+    redshift_conn_id="redshift",
+    table="songs",
+    sql_query=SqlQueries.song_table_insert,
+    append_only=False
 )
 
 load_artist_dimension_table = LoadDimensionOperator(
     task_id='Load_artist_dim_table',
-    dag=dag
+    dag=dag,
+    redshift_conn_id="redshift",
+    table="artists",
+    sql_query=SqlQueries.artist_table_insert,
+    append_only=False
 )
 
 load_time_dimension_table = LoadDimensionOperator(
     task_id='Load_time_dim_table',
-    dag=dag
+    dag=dag,
+    redshift_conn_id="redshift",
+    table="time",
+    sql_query=SqlQueries.time_table_insert,
+    append_only=False
 )
 
 run_quality_checks = DataQualityOperator(
     task_id='Run_data_quality_checks',
-    dag=dag
+    dag=dag,
+    redshift_conn_id='redshift',
+    tables=['songplays', 'users', 'songs', ' artists', 'time']
 )
 
 end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
