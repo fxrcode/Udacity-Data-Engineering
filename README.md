@@ -11,7 +11,7 @@
 - [x] Data Lake with Spark
 
 ## Project 4 - Data Pipelines with Apache Airflow
-- [] Data Pipeline with Apache Airflow
+- [x] Data Pipeline with Apache Airflow
 
 ## Project 5 - Data Engineering Capstone
 
