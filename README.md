@@ -8,9 +8,10 @@
 - [x] Data warehouse with AWS Redshift
 
 ## Project 3 - Data Lakes with Apache Spark
-- [ ] Data Lake with Spark
+- [x] Data Lake with Spark
 
 ## Project 4 - Data Pipelines with Apache Airflow
-
+- [] Data Pipeline with Apache Airflow
 
 ## Project 5 - Data Engineering Capstone
+
