@@ -1,3 +1,4 @@
 GlobalLandTemperaturesByCity.csv
-data/*
-sas_data_jan
+data
+sas_data
+i94_sample*
