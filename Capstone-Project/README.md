@@ -111,7 +111,7 @@ root
  ```
 
 ### 2. Transform data
-* [star-schema](star.png)
+* ![star-schema](star.png)
 * i94visa: `df_i94visa.parquet`
 ```
 root
