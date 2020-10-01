@@ -111,9 +111,140 @@ root
  ```
 
 ### 2. Transform data
-* i94 data:
- 
-* airport
+* visa: `df_i94visa.parquet`
+```
+root
+ |-- id: long (nullable = true)
+ |-- visa_type: string (nullable = true)
 
-* demographs
++---+---------+
+| id|visa_type|
++---+---------+
+|  1| BUSINESS|
+|  2| PLEASURE|
+|  3|  STUDENT|
+```
 
+* port: `df_i94port.parquet`
+```
+root
+ |-- id: string (nullable = true)
+ |-- airport: string (nullable = true)
+
++---+--------------------+
+| id|             airport|
++---+--------------------+
+|ALC|           ALCAN, AK|
+|ANC|       ANCHORAGE, AK|
+|BAR|BAKER AAF - BAKER...|
+|DAC|   DALTONS CACHE, AK|
+```
+
+* airport: `df_airport.parquet`
+```
+root
+ |-- ident: string (nullable = true)
+ |-- type: string (nullable = true)
+ |-- name: string (nullable = true)
+ |-- elevation_ft: integer (nullable = true)
+ |-- continent: string (nullable = true)
+ |-- iso_country: string (nullable = true)
+ |-- iso_region: string (nullable = true)
+ |-- municipality: string (nullable = true)
+ |-- gps_code: string (nullable = true)
+ |-- iata_code: string (nullable = true)
+ |-- local_code: string (nullable = true)
+ |-- coordinates: string (nullable = true)
+
++-----+-------------+--------------------+------------+---------+-----------+----------+-------------+--------+---------+----------+--------------------+
+|ident|         type|                name|elevation_ft|continent|iso_country|iso_region| municipality|gps_code|iata_code|local_code|         coordinates|
++-----+-------------+--------------------+------------+---------+-----------+----------+-------------+--------+---------+----------+--------------------+
+|  03N|small_airport|      Utirik Airport|           4|       OC|         MH|    MH-UTI|Utirik Island|    K03N|      UTK|       03N|  169.852005, 11.222|
+| 07FA|small_airport|Ocean Reef Club A...|           8|       NA|         US|     US-FL|    Key Largo|    07FA|      OCA|      07FA|-80.274803161621,...|
+|  0AK|small_airport|Pilot Station Air...|         305|       NA|         US|     US-AK|Pilot Station|    null|      PQS|       0AK|-162.899994, 61.9...|
+```
+
+* cit_res: `df_i94cit.parquet`
+```
+root
+ |-- id: long (nullable = true)
+ |-- citres: string (nullable = true)
+
++---+--------------------+
+| id|              citres|
++---+--------------------+
+|582|MEXICO AIR SEA, A...|
+|236|         AFGHANISTAN|
+|101|             ALBANIA|
+|316|             ALGERIA|
+```
+
+
+* state: `df_i94addr.parquet`
+```
+root
+ |-- st: string (nullable = true)
+ |-- state: string (nullable = true)
+
++---+-----------------+
+| st|            state|
++---+-----------------+
+| AL|          ALABAMA|
+| AK|           ALASKA|
+| AZ|          ARIZONA|
+```
+
+* demograph: `df_demo.parquet`
+```
+root
+ |-- State_Code: string (nullable = true)
+ |-- Median_Age: double (nullable = true)
+ |-- Male_Population: long (nullable = true)
+ |-- Female_Population: long (nullable = true)
+ |-- Total_Population: long (nullable = true)
+ |-- Number_Veterans: long (nullable = true)
+ |-- Foregin_born: long (nullable = true)
+ |-- Average_Household: double (nullable = true)
+ |-- American_Indian_Alaska_Native: long (nullable = true)
+ |-- Asian: long (nullable = true)
+ |-- Black_African-American: long (nullable = true)
+ |-- Hispanic_Latino: long (nullable = true)
+ |-- White: long (nullable = true)
+
++----------+------------------+---------------+-----------------+----------------+---------------+------------+------------------+-----------------------------+-------+----------------------+---------------+--------+
+|State_Code|        Median_Age|Male_Population|Female_Population|Total_Population|Number_Veterans|Foregin_born| Average_Household|American_Indian_Alaska_Native|  Asian|Black_African-American|Hispanic_Latino|   White|
++----------+------------------+---------------+-----------------+----------------+---------------+------------+------------------+-----------------------------+-------+----------------------+---------------+--------+
+|        SC| 34.17999999999999|         260944|           272713|          533657|          33463|       27744|             2.472|                         3705|  13355|                175064|          29863|  343764|
+|        AZ|           35.0375|        2227455|          2272087|         4499542|         264505|      682313|          2.774375|                       129708| 229183|                296222|        1508157| 3591611|
+|        LA|            34.625|         626998|           673597|         1300595|          69771|       83419|             2.465|                         8263|  38739|                602377|          87133|  654578|
+|        MN| 35.61818181818182|         702157|           720246|         1422403|          64894|      215873|2.5009090909090914|                        25242| 151544|                216731|         103229| 1050239|
+```
+
+* i94: `i94_valid.parquet`
+
+```
+root
+ |-- cicid: integer (nullable = true)
+ |-- i94yr: integer (nullable = true)
+ |-- i94mon: integer (nullable = true)
+ |-- i94cit: integer (nullable = true)
+ |-- i94res: integer (nullable = true)
+ |-- i94port: string (nullable = true)
+ |-- arrdate: integer (nullable = true)
+ |-- i94addr: string (nullable = true)
+ |-- depdate: integer (nullable = true)
+ |-- i94visa: integer (nullable = true)
+ |-- biryear: integer (nullable = true)
+ |-- gender: string (nullable = true)
+ |-- airline: string (nullable = true)
+ |-- visatype: string (nullable = true)
+
++-----+-----+------+------+------+-------+-------+-------+-------+-------+-------+------+-------+--------+
+|cicid|i94yr|i94mon|i94cit|i94res|i94port|arrdate|i94addr|depdate|i94visa|biryear|gender|airline|visatype|
++-----+-----+------+------+------+-------+-------+-------+-------+-------+-------+------+-------+--------+
+| 2187| 2016|    12|   209|   209|    AGA|  20789|     FL|   null|      2|   1957|     M|     UA|     GMT|
+| 5708| 2016|    12|   209|   209|    AGA|  20789|     NY|  20793|      2|   1987|     F|     DL|     GMT|
+| 9882| 2016|     8|   582|   582|    LVG|  20667|     NV|  20670|      2|   1952|     M|     4O|      B2|
+|19222| 2016|    12|   245|   245|    LOS|  20789|     CA|  20796|      2|   1980|     F|     DL|      B2|
+|24161| 2016|     8|   135|   135|    SPM|  20667|     TX|  20676|      2|   1994|     M|     EV|      WT|
+```
