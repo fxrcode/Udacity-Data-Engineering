@@ -117,5 +117,3 @@ root
 
 * demographs
 
-* global temperature
-

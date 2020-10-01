@@ -3,3 +3,4 @@ data
 sas_data
 i94_sample*
 temperature_us.parquet
+i94_valid*
