@@ -1,4 +1,6 @@
 # Capstone Udacity Project
+* note: in case Github failed to render my notebook, you can goto colab to redender. And here's the link: https://colab.research.google.com/github/fxrcode/Udacity-Data-Engineering/blob/master/Capstone-Project/Capstone_Udacity.ipynb
+
 
 ## General Flow
 * go for Data Lake Spark track.
