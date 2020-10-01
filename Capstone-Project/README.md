@@ -3,7 +3,7 @@
 ## General Flow
 * go for Data Lake Spark track.
 * Create interative local Spark jupyter notebook for development with partial dataset. Run `start_local_spark.sh` in local.
-* convert Spark jupyter notebook into `etl.py`, ssh into EMR, run `spark-submit etl.py`, then check parquet result in HDFS folder. 
+* Run python notebook in EMR notebook, then check parquet result in HDFS folder. 
 
 ## Detail Flow
 ### 1. Extract data
@@ -111,7 +111,7 @@ root
  ```
 
 ### 2. Transform data
-* visa: `df_i94visa.parquet`
+* i94visa: `df_i94visa.parquet`
 ```
 root
  |-- id: long (nullable = true)
@@ -125,7 +125,7 @@ root
 |  3|  STUDENT|
 ```
 
-* port: `df_i94port.parquet`
+* i94port: `df_i94port.parquet`
 ```
 root
  |-- id: string (nullable = true)
@@ -143,28 +143,22 @@ root
 * airport: `df_airport.parquet`
 ```
 root
- |-- ident: string (nullable = true)
  |-- type: string (nullable = true)
  |-- name: string (nullable = true)
- |-- elevation_ft: integer (nullable = true)
- |-- continent: string (nullable = true)
- |-- iso_country: string (nullable = true)
  |-- iso_region: string (nullable = true)
- |-- municipality: string (nullable = true)
- |-- gps_code: string (nullable = true)
  |-- iata_code: string (nullable = true)
- |-- local_code: string (nullable = true)
- |-- coordinates: string (nullable = true)
+ |-- latitude: string (nullable = true)
+ |-- longitude: string (nullable = true)
 
-+-----+-------------+--------------------+------------+---------+-----------+----------+-------------+--------+---------+----------+--------------------+
-|ident|         type|                name|elevation_ft|continent|iso_country|iso_region| municipality|gps_code|iata_code|local_code|         coordinates|
-+-----+-------------+--------------------+------------+---------+-----------+----------+-------------+--------+---------+----------+--------------------+
-|  03N|small_airport|      Utirik Airport|           4|       OC|         MH|    MH-UTI|Utirik Island|    K03N|      UTK|       03N|  169.852005, 11.222|
-| 07FA|small_airport|Ocean Reef Club A...|           8|       NA|         US|     US-FL|    Key Largo|    07FA|      OCA|      07FA|-80.274803161621,...|
-|  0AK|small_airport|Pilot Station Air...|         305|       NA|         US|     US-AK|Pilot Station|    null|      PQS|       0AK|-162.899994, 61.9...|
++-------------+--------------------+----------+---------+------------------+-------------------+
+|         type|                name|iso_region|iata_code|          latitude|          longitude|
++-------------+--------------------+----------+---------+------------------+-------------------+
+|small_airport|Ocean Reef Club A...|     US-FL|      OCA|  -80.274803161621|    25.325399398804|
+|small_airport|Pilot Station Air...|     US-AK|      PQS|       -162.899994|          61.934601|
+|small_airport|Crested Butte Air...|     US-CO|      CSE|       -106.928341|          38.851918|
 ```
 
-* cit_res: `df_i94cit.parquet`
+* i94cit: `df_i94cit.parquet`
 ```
 root
  |-- id: long (nullable = true)
@@ -180,7 +174,7 @@ root
 ```
 
 
-* state: `df_i94addr.parquet`
+* i94addr: `df_i94addr.parquet`
 ```
 root
  |-- st: string (nullable = true)
